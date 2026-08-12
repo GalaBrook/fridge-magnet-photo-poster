@@ -101,16 +101,17 @@ def remove_key(image: Image.Image, key_spec: str) -> Image.Image:
 def find_font(explicit: Path | None) -> Path:
     candidates = [
         explicit,
-        Path("C:/Windows/Fonts/georgia.ttf"),
-        Path("C:/Windows/Fonts/cambria.ttf"),
-        Path("C:/Windows/Fonts/times.ttf"),
-        Path("/System/Library/Fonts/Supplemental/Georgia.ttf"),
-        Path("/usr/share/fonts/truetype/dejavu/DejaVuSerif.ttf"),
+        Path("/System/Library/Fonts/Helvetica.ttc"),
+        Path("/System/Library/Fonts/HelveticaNeue.ttc"),
+        Path("C:/Windows/Fonts/arial.ttf"),
+        Path("C:/Windows/Fonts/segoeui.ttf"),
+        Path("/usr/share/fonts/truetype/liberation2/LiberationSans-Regular.ttf"),
+        Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"),
     ]
     for candidate in candidates:
         if candidate and candidate.exists():
             return candidate
-    raise RuntimeError("No suitable serif font found; pass --font with a local font path")
+    raise RuntimeError("No suitable Helvetica-style sans serif font found; pass --font with a local font path")
 
 
 def fit_title(
@@ -119,7 +120,7 @@ def fit_title(
     font_path: Path,
     max_width: int,
 ) -> tuple[list[str], ImageFont.FreeTypeFont, int]:
-    normalized = " ".join(title.strip().upper().split())
+    normalized = " ".join(title.strip().split())
     if not normalized:
         raise ValueError("Title cannot be empty")
 
@@ -129,9 +130,9 @@ def fit_title(
         for index in range(1, len(words)):
             line_candidates.append([" ".join(words[:index]), " ".join(words[index:])])
 
-    for size in range(52, 27, -1):
+    for size in range(50, 27, -1):
         font = ImageFont.truetype(str(font_path), size)
-        spacing = max(2, round(size * 0.12))
+        spacing = max(1, round(size * 0.04))
         for lines in line_candidates:
             widths = [sum(draw.textlength(c, font=font) for c in line) + spacing * (len(line) - 1) for line in lines]
             if max(widths) <= max_width:
@@ -175,23 +176,25 @@ def main() -> None:
     poster = Image.new("RGB", (args.width, args.height), background)
 
     magnet = remove_key(Image.open(args.magnet), args.key_color)
-    max_magnet_w = round(args.width * 0.34)
-    max_magnet_h = round(panel_height * 0.57)
+    max_magnet_w = round(args.width * 0.42)
+    max_magnet_h = round(panel_height * 0.48)
     scale = min(max_magnet_w / magnet.width, max_magnet_h / magnet.height)
     magnet = magnet.resize(
         (round(magnet.width * scale), round(magnet.height * scale)),
         Image.Resampling.LANCZOS,
     )
-    magnet_x = (args.width - magnet.width) // 2
-    magnet_y = round(panel_height * 0.09)
-    poster.paste(magnet, (magnet_x, magnet_y), magnet)
-
     draw = ImageDraw.Draw(poster)
     font_path = find_font(args.font)
     lines, font, letter_spacing = fit_title(draw, args.title, font_path, round(args.width * 0.76))
     line_height = round(font.size * 1.25)
     title_block_h = line_height * len(lines)
-    title_y = round(panel_height * 0.83) - title_block_h // 2
+    gap = round(panel_height * 0.045)
+    group_height = magnet.height + gap + title_block_h
+    group_center_y = round(panel_height * 0.52)
+    magnet_x = (args.width - magnet.width) // 2
+    magnet_y = group_center_y - group_height // 2
+    title_y = magnet_y + magnet.height + gap
+    poster.paste(magnet, (magnet_x, magnet_y), magnet)
     for index, line in enumerate(lines):
         draw_spaced_line(
             draw,
@@ -212,7 +215,7 @@ def main() -> None:
             "path": str(args.output),
             "size": poster.size,
             "split_y": panel_height,
-            "title": " ".join(args.title.strip().upper().split()),
+            "title": " ".join(args.title.strip().split()),
             "background": "#%02x%02x%02x" % background,
         }
     )

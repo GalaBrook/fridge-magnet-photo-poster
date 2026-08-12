@@ -1,6 +1,6 @@
 ---
 name: fridge-magnet-photo-poster
-description: Create a vertical 3:4 travel photography poster from a user-supplied real photo, with a small source-derived architectural refrigerator-magnet icon on a clean solid-color field above and the unchanged real photograph below. Use for 建筑冰箱贴摄影海报、小红书城市打卡、酒店门头、地标建筑、极简旅行卡片、上下分区摄影拼贴, or requests combining a generated souvenir icon with an authentic photo.
+description: Create a vertical 3:4 travel photography poster from a user-supplied real photo, with a prominent source-derived refrigerator-magnet icon and compact Helvetica-style English title on a clean solid-color field above, plus the unchanged real photograph below. Use for 建筑冰箱贴摄影海报、小红书城市打卡、酒店门头、地标建筑、人物或动物旅行纪念卡片、极简旅行卡片、上下分区摄影拼贴, or requests combining a generated souvenir icon with an authentic photo.
 ---
 
 # Fridge Magnet Photo Poster
@@ -11,7 +11,7 @@ Create exactly one polished poster. Use image generation only for the magnet ico
 
 - Use a vertical 3:4 canvas, `1536 x 2048` by default.
 - Give the upper and lower panels exactly 50% of the canvas each.
-- Keep the upper panel minimal: one flat source-derived color, one small centered magnet, and one English title.
+- Keep the upper panel minimal: one flat source-derived color, one prominent centered magnet, and one English title.
 - Put the supplied real photo in the lower panel. Permit only proportional resize and center crop.
 - Never generate, redraw, retouch, recolor, stylize, or reconstruct the lower photo.
 - Save a new PNG; never overwrite the source photo.
@@ -42,6 +42,7 @@ Title rules:
 - Use one to three English words.
 - Prefer 18 characters or fewer when practical.
 - Use natural, correctly spelled English.
+- Prefer natural title case. Preserve exact user-supplied capitalization.
 - Do not invent a specific place name without evidence.
 - Do not transliterate uncertain source text.
 - Respect exact user-supplied wording when provided.
@@ -65,7 +66,7 @@ Require:
 - preserved defining architecture with moderately simplified detail;
 - a thin warm-white or light-cream outer rim;
 - shallow molded relief and a restrained compact shadow;
-- a small refined souvenir scale with generous empty space;
+- a refined souvenir scale that remains prominent while preserving generous empty space;
 - a perfectly flat solid `#00ff00` chroma-key background;
 - no text, letters, labels, logos, captions, watermark, gradients, scenery, or extra decoration;
 - no `#00ff00` inside the magnet.
@@ -88,13 +89,21 @@ Locate a Python interpreter with Pillow. Run the bundled script relative to this
 
 Use `--key-color auto` only when continuing from an existing generated magnet whose corner background is a uniform non-green color.
 
+The composition script enforces the reference-led upper-panel relationship:
+
+- scale the magnet up to about 42% of the canvas width or 48% of the upper-panel height;
+- treat the magnet and title as one vertically centered group;
+- keep a compact gap of about 4.5% of the upper-panel height between them;
+- use Helvetica first, with Arial or another metric-compatible sans serif as fallback;
+- preserve title capitalization instead of forcing all caps.
+
 ### 6. Verify once
 
 Inspect the final PNG and confirm:
 
 - exact 3:4 dimensions and equal panels;
 - one flat upper background color;
-- a small centered icon with ample whitespace;
+- a prominent icon and title forming one compact, visually centered group with ample outer whitespace;
 - correctly spelled title below the icon with no overlap;
 - authentic lower photo content with no stretch or model reconstruction;
 - recognizable building crop;
@@ -105,4 +114,3 @@ If the magnet itself is unusable, make at most one targeted image-generation cor
 ## Delivery
 
 Return the final PNG and one brief sentence naming the dynamic title and source-derived background choice. Do not expose the full image-generation prompt unless requested.
-
