@@ -1,0 +1,5 @@
+interface:
+  display_name: "冰箱贴摄影海报"
+  short_description: "把真实照片制作为动态标题的上下分区建筑冰箱贴旅行摄影海报"
+  default_prompt: "Use $fridge-magnet-photo-poster to turn this photo into a 3:4 refrigerator-magnet travel poster with a dynamic English title."
+
