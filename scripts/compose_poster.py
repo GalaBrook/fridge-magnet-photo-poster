@@ -51,6 +51,18 @@ def corner_key(image: Image.Image) -> tuple[int, int, int]:
 
 def remove_key(image: Image.Image, key_spec: str) -> Image.Image:
     rgba = image.convert("RGBA")
+    existing_alpha = rgba.getchannel("A")
+    if existing_alpha.getextrema()[0] < 255:
+        bbox = existing_alpha.getbbox()
+        if bbox is None:
+            raise RuntimeError("Transparent magnet image contains no visible pixels")
+        padding = max(8, min(rgba.size) // 80)
+        left = max(0, bbox[0] - padding)
+        top = max(0, bbox[1] - padding)
+        right = min(rgba.width, bbox[2] + padding)
+        bottom = min(rgba.height, bbox[3] + padding)
+        return rgba.crop((left, top, right, bottom))
+
     key = corner_key(rgba) if key_spec.lower() == "auto" else ImageColor.getrgb(key_spec)
     pixels = rgba.load()
     mask = Image.new("L", rgba.size, 0)
